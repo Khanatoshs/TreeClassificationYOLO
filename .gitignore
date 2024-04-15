@@ -1,0 +1,10 @@
+*.yaml
+*log
+*pt
+test.py
+yolotest.py
+config.ini
+/Data
+/predictions
+/runs
+/testing
