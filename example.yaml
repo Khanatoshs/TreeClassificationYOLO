@@ -1,0 +1,9 @@
+#Determine paths to data
+path: path_to_parent_folder
+train: relative_path_to_training_images
+val: relative_path_to_validation_images
+
+#list categories
+names:
+  0: 'larch'
+  1: 'cedar'

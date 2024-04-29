@@ -1,4 +1,5 @@
 *.yaml
+!example.yaml
 *log
 *pt
 test.py

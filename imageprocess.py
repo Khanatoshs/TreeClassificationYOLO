@@ -118,13 +118,14 @@ def polygon_inside(image,polygon):
   return True
 
 
-def map_shape(shape):
+def map_shape(shape,cat):
     id = shape['id']
     coordinates =  shape['geometry']['coordinates']
     resdict = {
         'Fid':id,
         'coordinates':coordinates,
-        'type':'Point'
+        'type':'Point',
+        'category':cat,
     }
     resdict.update(shape['properties'])
     return resdict
@@ -231,6 +232,16 @@ def save_yolo_file(yolodata,filename):
     for data in yolodata:
       yolotxt.write(str(data['cat']) + ' ' + str(data['x']) + ' ' + str(data['y']) + ' ' + str(data['width']) + ' ' + str(data['height']) + '\n')
 
+def save_files(yolodata,imdata,txtname,imname):
+  save_yolo_file(yolodata,txtname)
+  cv2.imwrite(imname,imdata)
+
+def check_dir(labdir,imdir):
+  if not os.path.isdir(labdir):
+    os.mkdir(labdir)
+  if not os.path.isdir(imdir):
+    os.mkdir(imdir)
+
 def split_tiff(imtiff,size,location,polys,rastertiff,name,treesize,category):
     logging.debug(range(0,imtiff.shape[0],size))
     logging.debug(range(0,imtiff.shape[1],size))
@@ -260,8 +271,12 @@ def split_tiff(imtiff,size,location,polys,rastertiff,name,treesize,category):
                   dictYolo['cat'] = p['category']
                   listYolo.append(dictYolo)
             if len(listYolo) > 0:
-                save_yolo_file(listYolo,os.path.join(location,'labels',name + f"_{r}_{c}.txt"))
-                cv2.imwrite(os.path.join(location,'images',name + f"_{r}_{c}.png"),imtiff[r:r+size, c:c+size,:])
+              labdir = os.path.join(location,'labels')
+              imdir = os.path.join(location,'images')
+              check_dir(labdir,imdir)
+              save_files(listYolo,imtiff[r:r+size, c:c+size,:],os.path.join(labdir,name + f"_{r}_{c}.txt"),os.path.join(imdir,name + f"_{r}_{c}.png"))
+                #save_yolo_file(listYolo,os.path.join(location,'labels',name + f"_{r}_{c}.txt"))
+                #cv2.imwrite(os.path.join(location,'images',name + f"_{r}_{c}.png"),imtiff[r:r+size, c:c+size,:])
 
 conf = read_config('config.ini')
 pathShapes = conf['shapefile']
